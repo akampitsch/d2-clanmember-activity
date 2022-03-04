@@ -35,7 +35,7 @@ final class DiscordBotService @Autowired constructor(
     }
 
     private suspend fun startBot() {
-        val client = Kord("OTQ5MzM4OTg3MjMzOTQzNjAy.YiI61A.N89iBRGZr6TbYLJPR6H1o-sU4Gk")
+        val client = Kord("token")
         client.on<MessageCreateEvent> {
             logger.trace(message)
             
