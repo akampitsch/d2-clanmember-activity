@@ -1,0 +1,36 @@
+{{> header}}
+
+<h1>{{title}}</h1> 
+
+<div class="clanMembers">
+
+    {{#clanMembers}}
+        <section>
+            <header class="member-header">
+                <h2 class="member-title">
+                    {{displayName}}
+                </h2>
+            </header>
+
+
+            <div class="member-description">
+                <div class="member-activities">
+                    <div class="member-activity-sum">ActivitySum: {{ activitySum }}</div>
+                    <br>
+                    <table>
+                        <tr>
+                            {{#activityByMode }}
+                                {{#entrySet}}
+                                    <td class="member-activity" border="1px solid black">{{key}} - {{value}}</td>
+                                {{/entrySet}}
+                            {{/activityByMode }}
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </section>
+    {{/clanMembers}}
+</div>
+
+{{> footer}}
