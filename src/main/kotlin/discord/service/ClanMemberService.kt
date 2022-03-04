@@ -3,6 +3,7 @@ package discord.service
 import discord.component.AppCoroutineScope
 import discord.component.RestClient
 import discord.configuration.ApplicationProperties
+import discord.listener.IListener
 import discord.model.dao.ActivityCounter
 import discord.model.dao.ClanMember
 import discord.model.response.clan.GetMembersOfGroup
@@ -25,10 +26,11 @@ class ClanMemberService @Autowired constructor(
     val characterService: CharacterService,
     val clanMemberRepository: ClanMemberRepository,
     private val applicationProperties: ApplicationProperties
-) : Logging {
+) : Logging, IListener {
     private val baseUrl = applicationProperties.baseUrl
     private val clanMemberEndpoint = "GroupV2/${applicationProperties.groupId}/Members/"
-
+    private lateinit var listener: IListener
+    
     @Throws(Exception::class)
     suspend fun getAndStoreMembers() {
         val clanMembers = getMembers()
@@ -105,5 +107,13 @@ class ClanMemberService @Autowired constructor(
         } catch (e1: DataIntegrityViolationException) {
             e1.message?.let { logger.warn(it, e1) }
         }
+    }
+
+    override fun setListener(listener: IListener) {
+        this.listener = listener
+    }
+
+    override fun notify(string: String) {
+        listener.notify(string)
     }
 }

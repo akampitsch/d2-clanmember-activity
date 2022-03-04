@@ -3,6 +3,7 @@ package discord.service
 import discord.component.AppCoroutineScope
 import discord.component.RestClient
 import discord.configuration.ApplicationProperties
+import discord.listener.IListener
 import discord.model.dao.Activity
 import discord.model.dao.ClanMember
 import discord.model.response.activity.GetActivityHistory
@@ -26,10 +27,11 @@ class ActivityService @Autowired constructor(
     private val scope: AppCoroutineScope,
     val activityRepository: ActivityRepository,
     val restClient: RestClient,
-    private val applicationProperties: ApplicationProperties
-) : Logging {
+    private val applicationProperties: ApplicationProperties,
+) : Logging, IListener {
     private val baseUrl = applicationProperties.baseUrl
     private val rowCount = applicationProperties.rowCount
+    private lateinit var listener: IListener
 
     @Throws(Exception::class)
     suspend fun getAndStoreActivities(clanMembers: List<ClanMember>, startDateTime: LocalDateTime) {
@@ -126,11 +128,9 @@ class ActivityService @Autowired constructor(
             activity = Activity(instanceId = responseActivity.activityDetails.instanceId, date = responseActivity.period, modes = mutableListOf(), players = mutableListOf())
             activity.players.add(clanMember)
             for (mode in responseActivity.activityDetails.modes) {
-                try
-                {
+                try {
                     activity.modes.add(DestinyActivityModeType.fromInt(mode))
-                } catch (e: Exception)
-                {
+                } catch (e: Exception) {
                     logger.trace(e)
                     e.message?.let { logger.error(it, e) }
                 }
@@ -153,15 +153,12 @@ class ActivityService @Autowired constructor(
     fun getActivities(): List<Activity> {
         return activityRepository.findAll()
     }
-}
 
-/**
- *                             addActivitiesToClanMember(clanMember, characterId, helper)
-if (tracker["${clanMember.displayName} - $characterId"] != null) {
-val currentValue = tracker["${clanMember.displayName} - $characterId"]
-val toAdd = addActivitiesToActivityMap(startDateTime, endDateTime, activities, clanMember, helper)
-tracker["${clanMember.displayName} - $characterId"] = currentValue!! + toAdd
-} else {
-tracker["${clanMember.displayName} - $characterId"] = addActivitiesToActivityMap(startDateTime, endDateTime, activities, clanMember, helper)
+    override fun setListener(listener: IListener) {
+        this.listener = listener
+    }
+
+    override fun notify(string: String) {
+        listener.notify(string)
+    }
 }
- */

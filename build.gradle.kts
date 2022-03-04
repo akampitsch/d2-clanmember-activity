@@ -5,48 +5,58 @@ version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 plugins {
-    kotlin("plugin.jpa") version "1.6.10"
-    id("org.springframework.boot") version "2.6.3"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
+    val kotlinVersion = "1.6.10"
+    val springBootVersion = "2.6.3"
+    val springDependencyManagement = "1.0.11.RELEASE"
+    
+    kotlin("plugin.jpa") version kotlinVersion
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
+    
+    id("org.springframework.boot") version springBootVersion
+    id("io.spring.dependency-management") version springDependencyManagement
+    
     application
 }
 
+val kordVersion = "0.8.0-M10"
+val kotlinxVersion = "1.6.0"
+val jacksonVersion = "2.13.1"
+val log4j2KotlinVersion = "1.1.0"
+        
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.retry:spring-retry")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-mustache")
-//    implementation("org.springframework.boot:spring-boot-starter-log4j2")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinxVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$kotlinxVersion")
 
-    implementation("org.apache.logging.log4j:log4j-api-kotlin:1.1.0")
-    
+    implementation("org.apache.logging.log4j:log4j-api-kotlin:$log4j2KotlinVersion")
+
     implementation("com.h2database:h2")
 
     implementation("org.apache.commons:commons-lang3")
-    
+
+    implementation("dev.kord:kord-core:$kordVersion")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
-//configurations {
-//    all {
-//        exclude("org.springframework.boot:spring-boot-starter-logging")
-//    }
-//}
 
 repositories {
     mavenCentral()
+    // Kord Snapshots Repository (Optional):
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
+
 }
 
 tasks.withType<Test> {
@@ -63,12 +73,3 @@ tasks.withType<KotlinCompile> {
 application {
     mainClass.set("DiscordBoy.kt")
 }
-
-
-//sourceSets {
-//    main {
-//        resources {
-//            srcDirs( "src/main/resources")
-//        }
-//    }
-//}

@@ -2,6 +2,7 @@ package discord.service
 
 import discord.component.RestClient
 import discord.configuration.ApplicationProperties
+import discord.listener.IListener
 import discord.model.dao.Character
 import discord.model.dao.ClanMember
 import discord.model.response.profile.GetProfile
@@ -19,9 +20,10 @@ class CharacterService @Autowired constructor(
     private val characterRepository: CharacterRepository,
     private val restClient: RestClient,
     private val applicationProperties: ApplicationProperties
-) : Logging {
+) : Logging, IListener {
     private val baseUrl = applicationProperties.baseUrl
     private val componentQueryString = "?components=${applicationProperties.components}"
+    private lateinit var listener: IListener
 
     @Throws(Exception::class)
     suspend fun getAndStoreCharacters(member: ClanMember): MutableList<Character> {
@@ -49,6 +51,14 @@ class CharacterService @Autowired constructor(
         }
 
         return characters
+    }
+
+    override fun setListener(listener: IListener) {
+        this.listener = listener
+    }
+
+    override fun notify(string: String) {
+        listener.notify(string)
     }
 
 }

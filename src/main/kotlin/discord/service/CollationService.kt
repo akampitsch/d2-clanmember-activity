@@ -1,6 +1,7 @@
 package discord.service
 
 import discord.component.AppCoroutineScope
+import discord.listener.IListener
 import discord.model.dao.Activity
 import discord.util.Util
 import kotlinx.coroutines.Job
@@ -14,7 +15,9 @@ import java.time.LocalDateTime
 class CollationService @Autowired constructor(
     private val scope: AppCoroutineScope,
     val clanMemberService: ClanMemberService,
-) : Logging {
+) : Logging, IListener {
+    private lateinit var listener: IListener
+    
     @Throws(Exception::class)
     suspend fun runCollation(activities: List<Activity>, startDateTime: LocalDateTime, endDateTime: LocalDateTime) {
         val jobs = mutableListOf<Job>()
@@ -50,5 +53,13 @@ class CollationService @Autowired constructor(
 
         val endTime = System.currentTimeMillis()
         logger.info("Finished Collation in ${Util.convertMillisToTimeStamp(endTime - startTime)}")
+    }
+
+    override fun setListener(listener: IListener) {
+        this.listener = listener
+    }
+
+    override fun notify(string: String) {
+        listener.notify(string)
     }
 }
