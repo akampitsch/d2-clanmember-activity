@@ -7,6 +7,7 @@ import dev.kord.core.entity.ReactionEmoji
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
 import discord.component.AppCoroutineScope
+import discord.configuration.ApplicationProperties
 import discord.listener.IListener
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,9 +18,10 @@ import org.springframework.stereotype.Service
 @Service
 final class DiscordBotService @Autowired constructor(
     scope: AppCoroutineScope,
-    private val collationService: CollationService,
+    collationService: CollationService,
+    activityService: ActivityService,
     private val memberService: ClanMemberService,
-    private val activityService: ActivityService
+    private val applicationProperties: ApplicationProperties
 ) :
     Logging, IListener {
 
@@ -35,12 +37,12 @@ final class DiscordBotService @Autowired constructor(
     }
 
     private suspend fun startBot() {
-        val client = Kord("token")
+        val client = Kord(applicationProperties.discordToken)
         client.on<MessageCreateEvent> {
             logger.trace(message)
-            
+
             if (working) return@on
-            
+
             when (message.content) {
                 "!pong" -> doPong(message)
                 "/members" -> scrapeMembers(message)
